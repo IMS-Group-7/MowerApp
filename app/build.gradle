@@ -27,6 +27,12 @@ android {
         }
     }
 
+    buildscript {
+        dependencies {
+            classpath 'com.android.tools.build:gradle:7.3.1'
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -71,7 +77,6 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
     implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
-
 
 
 

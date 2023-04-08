@@ -9,6 +9,7 @@ import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
 import se.ju.mobile.mowerapp.ui.theme.MowerAppTheme
 import se.ju.mobile.mowerapp.views.LawnMowerConnectionView
+import se.ju.mobile.mowerapp.views.MovingRobotArrow
 
 
 class MainActivity : ComponentActivity() {
@@ -20,7 +21,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    LawnMowerConnectionView()
+                    MovingRobotArrow()
                 }
             }
         }
