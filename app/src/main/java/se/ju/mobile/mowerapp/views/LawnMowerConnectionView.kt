@@ -46,6 +46,7 @@ fun LawnMowerConnectionView(onConnect: () -> Unit) {
 }
 
 
+
 @Composable
 fun ConnectedLawnMower() {
     Column(
