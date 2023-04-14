@@ -1,5 +1,6 @@
 package se.ju.mobile.mowerapp
 
+import android.content.Intent
 import androidx.constraintlayout.compose.ConstraintLayout
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -101,12 +102,27 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
 
-                    MovingRobotArrow()
-
                     LawnMowerContent(onConnect = {
+                        val intent = Intent(this@MainActivity, MovingRobotArrowActivity::class.java)
+                        startActivity(intent)
 
                         // onConnect callback
                     })
+                }
+            }
+        }
+    }
+}
+class MovingRobotArrowActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            MowerAppTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colors.background
+                ) {
+                    MovingRobotArrow()
                 }
             }
         }
