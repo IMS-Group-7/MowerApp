@@ -16,6 +16,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.ui.viewinterop.AndroidView
 import se.ju.mobile.mowerapp.ui.theme.MowerAppTheme
 import androidx.compose.foundation.layout.offset
 import androidx.compose.material.AlertDialog
@@ -29,8 +30,7 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
-
-
+import se.ju.mobile.mowerapp.utils.PathView
 
 fun fetchData(coroutineScope: CoroutineScope, arrowDirection: String, showDialog: MutableState<Boolean>, dialogTitle: MutableState<String>, dialogMessage: MutableState<String>) {
 
@@ -89,7 +89,7 @@ fun MovingRobotArrow(coroutineScope: CoroutineScope) {
     val dialogMessage = remember { mutableStateOf("") }
 
     MowerAppTheme {
-        Column(modifier = Modifier.padding(16.dp) .background(Color(0xFF273A60))) {
+        Column(modifier = Modifier.padding(0.dp) .background(Color(0xFF273A60))) {
             Text(
                 text = "Dashboard",
                 modifier = Modifier.padding(vertical = 16.dp)
@@ -99,12 +99,14 @@ fun MovingRobotArrow(coroutineScope: CoroutineScope) {
             )
 
             // Second zone for the map
-            Box(
-                modifier = Modifier
+             AndroidView (
+                modifier = Modifier.padding(0.dp)
                     .fillMaxWidth()
-                    .height(250.dp)
-                    .background(Color.LightGray)
-                    .padding(horizontal = 16.dp),
+                    .height(252.dp)
+                    .background(color = Color.White),
+                factory = { context ->
+                    PathView(context).apply {  }
+                }
             )
 
             // Third zone : 4 buttons for arrows
@@ -126,7 +128,7 @@ fun MovingRobotArrow(coroutineScope: CoroutineScope) {
                             shape = CircleShape,
                             border = BorderStroke(1.dp, Color.White),
                             modifier = Modifier.fillMaxSize(),
-                            enabled = !isStarted
+                            enabled = isStarted
                         ) {
                             Text("Q", style = TextStyle(fontSize = 20.sp), textAlign = TextAlign.Center)
                         }
@@ -142,7 +144,7 @@ fun MovingRobotArrow(coroutineScope: CoroutineScope) {
                                 shape = CircleShape,
                                 border = BorderStroke(1.dp, Color.White),
                                 modifier = Modifier.fillMaxSize(),
-                                enabled = !isStarted
+                                enabled = isStarted
                             ) {
                                 Text("Z", style = TextStyle(fontSize = 20.sp), textAlign = TextAlign.Center)
                             }
@@ -155,7 +157,7 @@ fun MovingRobotArrow(coroutineScope: CoroutineScope) {
                                 shape = CircleShape,
                                 border = BorderStroke(1.dp, Color.White),
                                 modifier = Modifier.fillMaxSize(),
-                                enabled = !isStarted
+                                enabled = isStarted
                             ) {
                                 Text("S", style = TextStyle(fontSize = 20.sp), textAlign = TextAlign.Center)
                             }
@@ -168,7 +170,7 @@ fun MovingRobotArrow(coroutineScope: CoroutineScope) {
                             shape = CircleShape,
                             border = BorderStroke(1.dp, Color.White),
                             modifier = Modifier.fillMaxSize(),
-                            enabled = !isStarted
+                            enabled = isStarted
                         ) {
                             Text("D", style = TextStyle(fontSize = 20.sp), textAlign = TextAlign.Center)
                         }
@@ -176,26 +178,26 @@ fun MovingRobotArrow(coroutineScope: CoroutineScope) {
                 }
             }
 
-            // Add buttons Start et Stop
+            // Add buttons Start and Stop
             Row(
                 modifier = Modifier.fillMaxWidth() .padding(bottom = 35.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Button(
-                    onClick = { isStarted = false },
+                    onClick = { isStarted = true },
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF273A60), contentColor = Color.White),
                     border = BorderStroke(1.dp, Color.White),
-                    enabled = isStarted
+                    enabled = !isStarted
                 ) {
                     Text("Start")
                 }
 
                 Button(
-                    onClick = { isStarted = true },
+                    onClick = { isStarted = false },
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF273A60), contentColor = Color.White),
                     border = BorderStroke(1.dp, Color.White),
-                    enabled = !isStarted
+                    enabled = isStarted
                 ) {
                     Text("Stop")
                 }
