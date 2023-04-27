@@ -1,8 +1,10 @@
 package se.ju.mobile.mowerapp
 
+import android.app.AlertDialog
 import android.content.Intent
 import androidx.constraintlayout.compose.ConstraintLayout
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -31,6 +33,10 @@ import se.ju.mobile.mowerapp.views.MovingRobotArrow
 
 import se.ju.mobile.mowerapp.views.RoundConnectionButton
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
 
 
 @Composable
@@ -111,8 +117,40 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+        fetchData()
+    }
+
+    private fun fetchData() {
+        Thread {
+            try {
+                val url = URL("http://10.0.2.2:5000/api/mower")
+                val connection = url.openConnection() as HttpURLConnection
+                connection.requestMethod = "GET"
+                connection.connect()
+
+                val responseCode = connection.responseCode
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    val inputStream = connection.inputStream
+                    val reader = BufferedReader(InputStreamReader(inputStream))
+                    val response = reader.readText()
+                    reader.close()
+
+                    // Handle the data here, e.g., update the UI
+                    runOnUiThread {
+                        // Update the UI with the fetched data
+                    }
+                } else {
+                    // Handle the error
+                    Log.e("MainActivity", "Error response code: $responseCode")
+                }
+            } catch (e: Exception) {
+                Log.e("MainActivity", "Error: ${e.message}")
+                e.printStackTrace()
+            }
+        }.start()
     }
 }
+
 class MovingRobotArrowActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -122,9 +160,11 @@ class MovingRobotArrowActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    MovingRobotArrow()
+                    MovingRobotArrow(lifecycleScope)
                 }
             }
         }
     }
 }
+
+
