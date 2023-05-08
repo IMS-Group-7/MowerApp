@@ -17,11 +17,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.BorderStroke
 import se.ju.mobile.mowerapp.ui.theme.MowerAppTheme
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.foundation.layout.offset
 
 @Composable
 fun MovingRobotArrow() {
     var isStarted by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(false) }
+    var selectedOption by remember { mutableStateOf("") }
 
     MowerAppTheme {
         Column(modifier = Modifier.padding(16.dp) .background(Color(0xFF273A60))) {
@@ -61,7 +65,7 @@ fun MovingRobotArrow() {
                             shape = CircleShape,
                             border = BorderStroke(1.dp, Color.White),
                             modifier = Modifier.fillMaxSize(),
-                            enabled = !isStarted
+                            enabled = isStarted
                         ) {
                             Text("Q", style = TextStyle(fontSize = 20.sp), textAlign = TextAlign.Center)
                         }
@@ -77,7 +81,7 @@ fun MovingRobotArrow() {
                                 shape = CircleShape,
                                 border = BorderStroke(1.dp, Color.White),
                                 modifier = Modifier.fillMaxSize(),
-                                enabled = !isStarted
+                                enabled = isStarted
                             ) {
                                 Text("Z", style = TextStyle(fontSize = 20.sp), textAlign = TextAlign.Center)
                             }
@@ -90,7 +94,7 @@ fun MovingRobotArrow() {
                                 shape = CircleShape,
                                 border = BorderStroke(1.dp, Color.White),
                                 modifier = Modifier.fillMaxSize(),
-                                enabled = !isStarted
+                                enabled = isStarted
                             ) {
                                 Text("S", style = TextStyle(fontSize = 20.sp), textAlign = TextAlign.Center)
                             }
@@ -103,7 +107,7 @@ fun MovingRobotArrow() {
                             shape = CircleShape,
                             border = BorderStroke(1.dp, Color.White),
                             modifier = Modifier.fillMaxSize(),
-                            enabled = !isStarted
+                            enabled = isStarted
                         ) {
                             Text("D", style = TextStyle(fontSize = 20.sp), textAlign = TextAlign.Center)
                         }
@@ -118,19 +122,51 @@ fun MovingRobotArrow() {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Button(
-                    onClick = { isStarted = false },
+                    onClick = {
+                        expanded = !expanded
+                        isStarted = true
+                    },
+                    shape = CircleShape,
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF273A60), contentColor = Color.White),
                     border = BorderStroke(1.dp, Color.White),
                     enabled = isStarted
                 ) {
-                    Text("Start")
+                    Text(text = "A", color = Color.White)
                 }
-
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                    modifier = Modifier.width(IntrinsicSize.Min)
+                ) {
+                    DropdownMenuItem(onClick = {
+                        selectedOption = "Automatic Driving"
+                        expanded = false
+                        isStarted = false
+                    }) {
+                        Text(text = "Automatic Driving")
+                    }
+                    DropdownMenuItem(onClick = {
+                        selectedOption = "Manual Driving"
+                        expanded = false
+                        isStarted = true
+                    }) {
+                        Text(text = "Manual Driving")
+                    }
+                }
                 Button(
                     onClick = { isStarted = true },
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF273A60), contentColor = Color.White),
                     border = BorderStroke(1.dp, Color.White),
                     enabled = !isStarted
+                ) {
+                    Text("Start")
+                }
+
+                Button(
+                    onClick = { isStarted = false },
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF273A60), contentColor = Color.White),
+                    border = BorderStroke(1.dp, Color.White),
+                    enabled = isStarted
                 ) {
                     Text("Stop")
                 }
