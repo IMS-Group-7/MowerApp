@@ -195,7 +195,7 @@ fun MovingRobotArrow(coroutineScope: CoroutineScope) {
                     shape = CircleShape,
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF273A60), contentColor = Color.White),
                     border = BorderStroke(1.dp, Color.White),
-                    enabled = !isStarted
+                    enabled = isStarted
                 ) {
                     Text(text = "A", color = Color.White)
                 }
@@ -220,10 +220,10 @@ fun MovingRobotArrow(coroutineScope: CoroutineScope) {
                     }
                 }
                 Button(
-                    onClick = { isStarted = false },
+                    onClick = { isStarted = true },
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF273A60), contentColor = Color.White),
                     border = BorderStroke(1.dp, Color.White),
-                    enabled = isStarted
+                    enabled = !isStarted
                 ) {
                     Text("Start")
                 }
@@ -240,8 +240,4 @@ fun MovingRobotArrow(coroutineScope: CoroutineScope) {
         }
     }
     ShowAlertDialog(showDialog, dialogTitle, dialogMessage)
-
-
-
-
 }

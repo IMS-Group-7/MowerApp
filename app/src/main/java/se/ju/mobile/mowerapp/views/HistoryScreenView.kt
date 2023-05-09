@@ -17,6 +17,8 @@ import androidx.compose.foundation.border
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.clickable
+import androidx.navigation.NavController
+import se.ju.mobile.mowerapp.NavBar
 
 
 @Composable
