@@ -13,16 +13,24 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import androidx.compose.foundation.border
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.clickable
 
 
 @Composable
 fun SessionHistoryPage() {
     val sessionList = remember { mutableStateListOf<Session>() }
 
-    Column {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Button(
             onClick = {
-                // Add a new case of a session
+                // Ajouter une nouvelle session
                 val newSession = Session(
                     title = "Session",
                     sessionNumber = sessionList.size + 1,
@@ -35,32 +43,21 @@ fun SessionHistoryPage() {
             Text("New Session")
         }
 
-        // Display Sessions
+        // Afficher les sessions
         for (session in sessionList) {
-            ClickableText(
-                text = buildAnnotatedString {
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append("Session: ${session.sessionNumber}")
-                    }
-                    append("\nStart time: ${session.startTime}")
-                    append("\nEnd time: ${session.endTime}")
-                },
-                onClick = {
-                    // Handle the onClick event for the session case
-                    // Implement the logic to navigate to the summary page
-                }
-            )
+            SessionCase(session = session)
         }
     }
 }
 
 @Composable
-fun SessionCase(session: Session, onClick: () -> Unit) {
-    // Display Session case with information
+fun SessionCase(session: Session) {
     Card(
         modifier = Modifier
+            .padding(16.dp)
+            .border(1.dp, Color.Black)
             .fillMaxWidth()
-            .padding(16.dp),
+            .wrapContentHeight(),
         elevation = 4.dp
     ) {
         Column(
