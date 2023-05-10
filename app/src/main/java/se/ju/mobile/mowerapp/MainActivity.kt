@@ -1,38 +1,39 @@
 package se.ju.mobile.mowerapp
 
-import android.app.AlertDialog
-import android.content.Intent
-import androidx.constraintlayout.compose.ConstraintLayout
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.ui.Modifier
+import se.ju.mobile.mowerapp.ui.theme.MowerAppTheme
+import se.ju.mobile.mowerapp.views.LawnMowerConnectionView
+import se.ju.mobile.mowerapp.views.MovingRobotArrow
+import android.content.Intent
+import androidx.constraintlayout.compose.ConstraintLayout
+import android.util.Log
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.Box
+
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import se.ju.mobile.mowerapp.ui.theme.MowerAppTheme
 import se.ju.mobile.mowerapp.views.ConnectedLawnMower
-import se.ju.mobile.mowerapp.views.LawnMowerConnectionView
-
-import se.ju.mobile.mowerapp.views.MovingRobotArrow
-
-import se.ju.mobile.mowerapp.views.RoundConnectionButton
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import se.ju.mobile.mowerapp.views.SessionHistoryPage
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
@@ -154,17 +155,23 @@ class MainActivity : ComponentActivity() {
 class MovingRobotArrowActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             MowerAppTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    MovingRobotArrow(lifecycleScope)
+                    MovingRobotArrowContent()
                 }
             }
         }
     }
 }
 
+@Composable
+fun MovingRobotArrowContent() {
+    val navController = rememberNavController()
+    SessionHistoryPage(navController = navController)
+}
 

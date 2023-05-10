@@ -22,7 +22,7 @@ import se.ju.mobile.mowerapp.NavBar
 
 
 @Composable
-fun SessionHistoryPage() {
+fun SessionHistoryPage(navController: NavController) {
     val sessionList = remember { mutableStateListOf<Session>() }
 
     Column(
@@ -47,19 +47,20 @@ fun SessionHistoryPage() {
 
         // Afficher les sessions
         for (session in sessionList) {
-            SessionCase(session = session)
+            SessionCase(session = session, navController = navController)
         }
     }
 }
 
 @Composable
-fun SessionCase(session: Session) {
+fun SessionCase(session: Session, navController: NavController) {
     Card(
         modifier = Modifier
             .padding(16.dp)
             .border(1.dp, Color.Black)
             .fillMaxWidth()
-            .wrapContentHeight(),
+            .wrapContentHeight()
+            .clickable { navController.navigate("detail/${session.sessionNumber}") },
         elevation = 4.dp
     ) {
         Column(
