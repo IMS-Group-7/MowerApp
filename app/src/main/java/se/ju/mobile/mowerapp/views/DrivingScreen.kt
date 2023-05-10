@@ -18,14 +18,17 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.ui.viewinterop.AndroidView
 import se.ju.mobile.mowerapp.ui.theme.MowerAppTheme
-import androidx.compose.foundation.layout.offset
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import se.ju.mobile.mowerapp.utils.NavBar
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
@@ -79,20 +82,24 @@ fun ShowAlertDialog(showDialog: MutableState<Boolean>, dialogTitle: MutableState
     }
 }
 
-
-
 @Composable
-fun MovingRobotArrow(coroutineScope: CoroutineScope) {
+fun DrivingScreen(coroutineScope: CoroutineScope, navController: NavController) {
+    var isAuto by remember { mutableStateOf(true) }
     var isStarted by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(false) }
+    var selectedOption by remember { mutableStateOf("") }
     val showDialog = remember { mutableStateOf(false) }
     val dialogTitle = remember { mutableStateOf("") }
     val dialogMessage = remember { mutableStateOf("") }
 
     MowerAppTheme {
-        Column(modifier = Modifier.padding(0.dp) .background(Color(0xFF273A60))) {
+        Column(modifier = Modifier
+            .padding(0.dp)
+            .background(Color(0xFF273A60))) {
             Text(
                 text = "Dashboard",
-                modifier = Modifier.padding(vertical = 16.dp)
+                modifier = Modifier
+                    .padding(vertical = 16.dp)
                     .align(Alignment.CenterHorizontally),
                 fontSize = 24.sp,
                 color = Color.White
@@ -100,7 +107,8 @@ fun MovingRobotArrow(coroutineScope: CoroutineScope) {
 
             // Second zone for the map
              AndroidView (
-                modifier = Modifier.padding(0.dp)
+                modifier = Modifier
+                    .padding(0.dp)
                     .fillMaxWidth()
                     .height(252.dp)
                     .background(color = Color.White),
@@ -128,7 +136,7 @@ fun MovingRobotArrow(coroutineScope: CoroutineScope) {
                             shape = CircleShape,
                             border = BorderStroke(1.dp, Color.White),
                             modifier = Modifier.fillMaxSize(),
-                            enabled = isStarted
+                            enabled = isStarted and !isAuto
                         ) {
                             Text("Q", style = TextStyle(fontSize = 20.sp), textAlign = TextAlign.Center)
                         }
@@ -144,7 +152,7 @@ fun MovingRobotArrow(coroutineScope: CoroutineScope) {
                                 shape = CircleShape,
                                 border = BorderStroke(1.dp, Color.White),
                                 modifier = Modifier.fillMaxSize(),
-                                enabled = isStarted
+                                enabled = isStarted and !isAuto
                             ) {
                                 Text("Z", style = TextStyle(fontSize = 20.sp), textAlign = TextAlign.Center)
                             }
@@ -157,7 +165,7 @@ fun MovingRobotArrow(coroutineScope: CoroutineScope) {
                                 shape = CircleShape,
                                 border = BorderStroke(1.dp, Color.White),
                                 modifier = Modifier.fillMaxSize(),
-                                enabled = isStarted
+                                enabled = isStarted and !isAuto
                             ) {
                                 Text("S", style = TextStyle(fontSize = 20.sp), textAlign = TextAlign.Center)
                             }
@@ -170,7 +178,7 @@ fun MovingRobotArrow(coroutineScope: CoroutineScope) {
                             shape = CircleShape,
                             border = BorderStroke(1.dp, Color.White),
                             modifier = Modifier.fillMaxSize(),
-                            enabled = isStarted
+                            enabled = isStarted and !isAuto
                         ) {
                             Text("D", style = TextStyle(fontSize = 20.sp), textAlign = TextAlign.Center)
                         }
@@ -180,10 +188,43 @@ fun MovingRobotArrow(coroutineScope: CoroutineScope) {
 
             // Add buttons Start and Stop
             Row(
-                modifier = Modifier.fillMaxWidth() .padding(bottom = 35.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 35.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
+                Button(
+                    onClick = {
+                        expanded = !expanded
+                    },
+                    shape = CircleShape,
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF273A60), contentColor = Color.White),
+                    border = BorderStroke(1.dp, Color.White),
+                    enabled = !isStarted
+                ) {
+                    Text(text = "A", color = Color.White)
+                }
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                    modifier = Modifier.width(IntrinsicSize.Min)
+                ) {
+                    DropdownMenuItem(onClick = {
+                        selectedOption = "Automatic Driving"
+                        expanded = false
+                        isAuto = true
+                    }) {
+                        Text(text = "Automatic Driving")
+                    }
+                    DropdownMenuItem(onClick = {
+                        selectedOption = "Manual Driving"
+                        expanded = false
+                        isAuto = false
+                    }) {
+                        Text(text = "Manual Driving")
+                    }
+                }
                 Button(
                     onClick = { isStarted = true },
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF273A60), contentColor = Color.White),
@@ -202,11 +243,10 @@ fun MovingRobotArrow(coroutineScope: CoroutineScope) {
                     Text("Stop")
                 }
             }
+            
+            // Add the navbar
+            NavBar(navController = navController)
         }
     }
     ShowAlertDialog(showDialog, dialogTitle, dialogMessage)
-
-
-
-
 }
