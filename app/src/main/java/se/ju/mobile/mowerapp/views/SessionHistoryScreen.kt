@@ -12,6 +12,9 @@ import androidx.compose.foundation.border
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Scaffold
 import androidx.navigation.NavController
 import se.ju.mobile.mowerapp.utils.NavBar
 
@@ -20,34 +23,40 @@ import se.ju.mobile.mowerapp.utils.NavBar
 fun SessionHistoryScreen(navController: NavController) {
     val sessionList = remember { mutableStateListOf<Session>() }
 
-    Column(
+    Scaffold(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Button(
-            onClick = {
-                // Ajouter une nouvelle session
-                val newSession = Session(
-                    title = "Session",
-                    sessionNumber = sessionList.size + 1,
-                    startTime = LocalDateTime.now(),
-                    endTime = LocalDateTime.now().plusHours(1)
-                )
-                sessionList.add(newSession)
+        bottomBar = { NavBar(navController = navController) },
+        content = { padding ->
+            Box(modifier = Modifier.padding(padding)) {
+                Column(
+                    modifier = Modifier
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Button(
+                        onClick = {
+                            // Ajouter une nouvelle session
+                            val newSession = Session(
+                                title = "Session",
+                                sessionNumber = sessionList.size + 1,
+                                startTime = LocalDateTime.now(),
+                                endTime = LocalDateTime.now().plusHours(1)
+                            )
+                            sessionList.add(newSession)
+                        }
+                    ) {
+                        Text("New Session")
+                    }
+
+                    // Afficher les sessions
+                    for (session in sessionList) {
+                        SessionCase(session = session, navController = navController)
+                    }
+                }
             }
-        ) {
-            Text("New Session")
         }
-
-        // Afficher les sessions
-        for (session in sessionList) {
-            SessionCase(session = session, navController = navController)
-        }
-
-        // Add the navbar
-        NavBar(navController = navController)
-    }
+    )
 }
 
 @Composable

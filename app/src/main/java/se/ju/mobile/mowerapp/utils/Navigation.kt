@@ -1,4 +1,5 @@
 package se.ju.mobile.mowerapp.utils
+import se.ju.mobile.mowerapp.R
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
@@ -13,7 +14,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
-import androidx.compose.runtime.currentCompositionLocalContext
+import androidx.compose.material.Icon
+import androidx.compose.material.Text
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.zIndex
+import kotlinx.coroutines.MainScope
 import se.ju.mobile.mowerapp.views.DrivingScreen
 import se.ju.mobile.mowerapp.views.SessionHistoryScreen
 
@@ -22,7 +28,7 @@ fun Navigation() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Screen.DrivingScreen.route) {
         composable(route = Screen.DrivingScreen.route) {
-            DrivingScreen(coroutineScope = , navController = navController)
+            DrivingScreen(coroutineScope = MainScope(), navController = navController)
         }
         composable(route = Screen.SessionHistoryScreen.route) {
             SessionHistoryScreen(navController = navController)
@@ -33,20 +39,28 @@ fun Navigation() {
 @Composable
 fun NavBar(navController: NavController) {
     BottomNavigation(
-        modifier = Modifier.height(56.dp),
-        backgroundColor = Color.Blue
+        modifier = Modifier.height(80.dp)
+            .zIndex(zIndex = 10000F),
+        backgroundColor = Color(0xFF23252A),
+        elevation = 1.dp
     ) {
         BottomNavigationItem(
             selected = navController.currentDestination?.route == Screen.DrivingScreen.route,
             onClick = { navController.navigate(Screen.DrivingScreen.route) },
-            icon = { /* Icône de l'item */ },
-            label = { "Driving" }
+            icon = { Icon(painterResource(id = R.drawable.mdi_controller), contentDescription = "Driving") },
+            label = { Text(text = "Driving") },
+            selectedContentColor = Color.White,
+            unselectedContentColor = Color(0xFF818181),
+            modifier = Modifier.padding(start = 0.dp, top = 12.dp, end = 0.dp, bottom = 16.dp)
         )
         BottomNavigationItem(
             selected = navController.currentDestination?.route == Screen.SessionHistoryScreen.route,
             onClick = { navController.navigate(Screen.SessionHistoryScreen.route) },
-            icon = { /* Icône de l'item */ },
-            label = { "History" }
+            icon = { Icon(painterResource(id = R.drawable.mdi_history), contentDescription = "Driving") },
+            label = { Text(text = "History") },
+            selectedContentColor = Color.White,
+            unselectedContentColor = Color(0xFF818181),
+            modifier = Modifier.padding(start = 0.dp, top = 12.dp, end = 0.dp, bottom = 16.dp)
         )
     }
 }

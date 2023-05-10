@@ -8,33 +8,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
 import se.ju.mobile.mowerapp.ui.theme.MowerAppTheme
-import se.ju.mobile.mowerapp.views.LawnMowerConnectionView
-import android.content.Intent
-import androidx.constraintlayout.compose.ConstraintLayout
 import android.util.Log
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.layout.Box
-
-import androidx.navigation.compose.rememberNavController
-
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import se.ju.mobile.mowerapp.views.ConnectedLawnMower
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import se.ju.mobile.mowerapp.utils.Navigation
-import se.ju.mobile.mowerapp.views.DrivingScreen
-import se.ju.mobile.mowerapp.views.Screen
-import se.ju.mobile.mowerapp.views.SessionHistoryScreen
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
