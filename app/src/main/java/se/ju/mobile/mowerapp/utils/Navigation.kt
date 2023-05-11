@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import se.ju.mobile.mowerapp.views.Screen
 
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.*
@@ -20,8 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.zIndex
 import kotlinx.coroutines.MainScope
-import se.ju.mobile.mowerapp.views.DrivingScreen
-import se.ju.mobile.mowerapp.views.SessionHistoryScreen
+import se.ju.mobile.mowerapp.views.*
 
 @Composable
 fun Navigation() {
@@ -32,6 +30,12 @@ fun Navigation() {
         }
         composable(route = Screen.SessionHistoryScreen.route) {
             SessionHistoryScreen(navController = navController)
+        }
+        composable(route = Screen.SessionSummaryScreen.route) {
+            SessionSummaryScreen(navController = navController)
+        }
+        composable(route = Screen.CollisionAvoidedScreen.route) {
+            CollisionAvoidedScreen(navController = navController)
         }
     }
 }
