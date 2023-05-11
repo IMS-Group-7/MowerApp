@@ -8,13 +8,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.rememberNavController
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.navigation.NavHostController
-import se.ju.mobile.mowerapp.views.MovingRobotArrow
-import se.ju.mobile.mowerapp.views.SessionHistoryPage
 
 
 
