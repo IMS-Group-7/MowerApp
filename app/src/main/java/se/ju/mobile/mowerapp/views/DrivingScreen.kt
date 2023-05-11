@@ -110,7 +110,7 @@ fun DrivingScreen(coroutineScope: CoroutineScope, navController: NavController) 
                 modifier = Modifier
                     .padding(0.dp)
                     .fillMaxWidth()
-                    .height(252.dp)
+                    .height(245.dp)
                     .background(color = Color.White),
                 factory = { context ->
                     PathView(context).apply {  }
@@ -190,7 +190,7 @@ fun DrivingScreen(coroutineScope: CoroutineScope, navController: NavController) 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 35.dp),
+                    .padding(bottom = 15.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
