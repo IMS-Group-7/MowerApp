@@ -110,7 +110,7 @@ fun DrivingScreen(coroutineScope: CoroutineScope, navController: NavController) 
                 modifier = Modifier
                     .padding(0.dp)
                     .fillMaxWidth()
-                    .height(252.dp)
+                    .height(245.dp)
                     .background(color = Color.White),
                 factory = { context ->
                     PathView(context).apply {  }
@@ -190,7 +190,7 @@ fun DrivingScreen(coroutineScope: CoroutineScope, navController: NavController) 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 35.dp),
+                    .padding(bottom = 15.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -201,7 +201,6 @@ fun DrivingScreen(coroutineScope: CoroutineScope, navController: NavController) 
                     shape = CircleShape,
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF273A60), contentColor = Color.White),
                     border = BorderStroke(1.dp, Color.White),
-                    enabled = !isStarted
                 ) {
                     Text(text = "A", color = Color.White)
                 }
@@ -213,14 +212,12 @@ fun DrivingScreen(coroutineScope: CoroutineScope, navController: NavController) 
                     DropdownMenuItem(onClick = {
                         selectedOption = "Automatic Driving"
                         expanded = false
-                        isAuto = true
                     }) {
                         Text(text = "Automatic Driving")
                     }
                     DropdownMenuItem(onClick = {
                         selectedOption = "Manual Driving"
                         expanded = false
-                        isAuto = false
                     }) {
                         Text(text = "Manual Driving")
                     }
