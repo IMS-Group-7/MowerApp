@@ -1,25 +1,25 @@
 package se.ju.mobile.mowerapp.views
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import java.time.LocalDateTime
-import androidx.compose.material.Card
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.material.Scaffold
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import se.ju.mobile.mowerapp.utils.NavBar
+import se.ju.mobile.mowerapp.utils.SessionsData
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SessionHistoryScreen(navController: NavController) {
-    val sessionList = remember { mutableStateListOf<Session>() }
 
     Column(modifier = Modifier
         .padding(0.dp)
@@ -44,58 +44,11 @@ fun SessionHistoryScreen(navController: NavController) {
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Button(
-                            onClick = {
-                                // Ajouter une nouvelle session
-                                val newSession = Session(
-                                    title = "Session",
-                                    sessionNumber = sessionList.size + 1,
-                                    startTime = LocalDateTime.now(),
-                                    endTime = LocalDateTime.now().plusHours(1)
-                                )
-                                sessionList.add(newSession)
-                            }
-                        ) {
-                            Text("New Session")
-                        }
-
-                        // Afficher les sessions
-                        for (session in sessionList) {
-                            SessionCase(session = session, navController = navController)
-                        }
+                        // Sessions display
+                        SessionsData(navController)
                     }
                 }
             }
         )
     }
 }
-
-@Composable
-fun SessionCase(session: Session, navController: NavController) {
-    Card(
-        modifier = Modifier
-            .padding(16.dp)
-            .border(1.dp, Color.Black)
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .clickable {
-                navController.navigate(Screen.SessionSummaryScreen.route)
-            },
-        elevation = 4.dp
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text("Session: ${session.sessionNumber}")
-            Text("Start time: ${session.startTime}")
-            Text("End time: ${session.endTime}")
-        }
-    }
-}
-
-data class Session(
-    val title: String,
-    val sessionNumber: Int,
-    val startTime: LocalDateTime,
-    val endTime: LocalDateTime
-)
