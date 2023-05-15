@@ -56,7 +56,7 @@ fun ShowAlertDialog(showDialog: MutableState<Boolean>, dialogTitle: MutableState
 }
 
 @Composable
-fun DrivingScreen(socketManager: SocketManager,coroutineScope: CoroutineScope, navController: NavController) {
+fun DrivingScreen(socketManager: SocketManager, navController: NavController) {
     var isAuto by remember { mutableStateOf(true) }
     var isStarted by remember { mutableStateOf(false) }
     var expanded by remember { mutableStateOf(false) }

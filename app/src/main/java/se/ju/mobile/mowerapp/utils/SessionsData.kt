@@ -1,6 +1,5 @@
 package se.ju.mobile.mowerapp.utils
 
-import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.border
@@ -19,20 +18,12 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.runBlocking
 import org.json.JSONArray
 import se.ju.mobile.mowerapp.views.Screen
-import java.sql.Timestamp
-import java.text.ParsePosition
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-import java.util.Date
 import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SessionsData(navController: NavController) {
-    val formatter = SimpleDateFormat("MM/dd/yyyy - HH:mm:ss (zzz)", Locale.getDefault())
     val sessionsList = ArrayList<Session>()
     val res = ApiManager()
 
@@ -59,12 +50,12 @@ fun SessionsData(navController: NavController) {
 fun SessionCase(session: Session, navController: NavController) {
     Card(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(16.dp, 16.dp, 16.dp, 0.dp)
             .border(1.dp, Color.Black)
             .fillMaxWidth()
             .wrapContentHeight()
             .clickable {
-                navController.navigate(Screen.SessionSummaryScreen.route)
+                navController.navigate("sessionSummary/${session.title}")
             },
         elevation = 4.dp
     ) {
@@ -90,18 +81,4 @@ data class Session(
     val title: String,
     val startTime: String,
     val endTime: String,
-)
-
-data class SummarySession(
-    val title: String,
-    val date: LocalDate,
-    val time: LocalTime,
-    val numberOfCollisions: Int,
-    val collisionList: ArrayList<Collision>,
-)
-
-data class Collision(
-    val title: String,
-    val coordinates: Pair<Float, Float>,
-    val timestamp: Timestamp,
 )
