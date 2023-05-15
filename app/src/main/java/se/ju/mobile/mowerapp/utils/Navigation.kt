@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.zIndex
 import kotlinx.coroutines.MainScope
+import se.ju.mobile.mowerapp.socket.SocketManager
 import se.ju.mobile.mowerapp.views.*
 
 @Composable
@@ -26,7 +27,7 @@ fun Navigation() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Screen.DrivingScreen.route) {
         composable(route = Screen.DrivingScreen.route) {
-            DrivingScreen(coroutineScope = MainScope(), navController = navController)
+            DrivingScreen( socketManager = SocketManager(),coroutineScope = MainScope(), navController = navController)
         }
         composable(route = Screen.SessionHistoryScreen.route) {
             SessionHistoryScreen(navController = navController)

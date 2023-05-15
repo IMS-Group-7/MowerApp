@@ -1,5 +1,7 @@
 package se.ju.mobile.mowerapp.views
 
+import android.app.AlertDialog
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.Button
@@ -28,6 +30,7 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import se.ju.mobile.mowerapp.socket.SocketManager
 import se.ju.mobile.mowerapp.utils.NavBar
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -35,36 +38,6 @@ import java.net.HttpURLConnection
 import java.net.URL
 import se.ju.mobile.mowerapp.utils.PathView
 
-fun fetchData(coroutineScope: CoroutineScope, arrowDirection: String, showDialog: MutableState<Boolean>, dialogTitle: MutableState<String>, dialogMessage: MutableState<String>) {
-
-    coroutineScope.launch(Dispatchers.IO) {
-        try {
-            val url = URL("http://10.0.2.2:5000/api/mower")
-            val connection = url.openConnection() as HttpURLConnection
-            connection.requestMethod = "GET"
-            connection.connect()
-
-            val responseCode = connection.responseCode
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                val inputStream = connection.inputStream
-                val reader = BufferedReader(InputStreamReader(inputStream))
-                val response = reader.readText()
-                reader.close()
-
-                // Update the UI with the fetched data
-                coroutineScope.launch(Dispatchers.Main) {
-                    showDialog.value = true
-                    dialogTitle.value = "Arrow pressed: $arrowDirection" // Update this line
-                    dialogMessage.value = "Successfully fetched data from mockup_server. The fetched data is: $response" // Update this line
-                }
-            } else {
-                // Handle the error
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-}
 
 @Composable
 fun ShowAlertDialog(showDialog: MutableState<Boolean>, dialogTitle: MutableState<String>, dialogMessage: MutableState<String>) {
@@ -83,7 +56,7 @@ fun ShowAlertDialog(showDialog: MutableState<Boolean>, dialogTitle: MutableState
 }
 
 @Composable
-fun DrivingScreen(coroutineScope: CoroutineScope, navController: NavController) {
+fun DrivingScreen(socketManager: SocketManager,coroutineScope: CoroutineScope, navController: NavController) {
     var isAuto by remember { mutableStateOf(true) }
     var isStarted by remember { mutableStateOf(false) }
     var expanded by remember { mutableStateOf(false) }
@@ -91,6 +64,8 @@ fun DrivingScreen(coroutineScope: CoroutineScope, navController: NavController) 
     val showDialog = remember { mutableStateOf(false) }
     val dialogTitle = remember { mutableStateOf("") }
     val dialogMessage = remember { mutableStateOf("") }
+
+    socketManager.connectMobileAppToBackend()
 
     MowerAppTheme {
         Column(modifier = Modifier
@@ -131,7 +106,7 @@ fun DrivingScreen(coroutineScope: CoroutineScope, navController: NavController) 
 
                     Box(modifier = Modifier.size(50.dp)) {
                         Button(
-                            onClick = {fetchData(coroutineScope, "Left", showDialog, dialogTitle, dialogMessage) },
+                            onClick = { socketManager.moveLeft() },
                             colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF273A60), contentColor = Color.White),
                             shape = CircleShape,
                             border = BorderStroke(1.dp, Color.White),
@@ -147,20 +122,20 @@ fun DrivingScreen(coroutineScope: CoroutineScope, navController: NavController) 
                     ) {
                         Box(modifier = Modifier.size(50.dp)) {
                             Button(
-                                onClick = {fetchData(coroutineScope, "Up", showDialog, dialogTitle, dialogMessage) },
+                                onClick = {socketManager.moveForward()},
                                 colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF273A60), contentColor = Color.White),
                                 shape = CircleShape,
                                 border = BorderStroke(1.dp, Color.White),
                                 modifier = Modifier.fillMaxSize(),
                                 enabled = isStarted and !isAuto
                             ) {
-                                Text("Z", style = TextStyle(fontSize = 20.sp), textAlign = TextAlign.Center)
+                                Text("W", style = TextStyle(fontSize = 20.sp), textAlign = TextAlign.Center)
                             }
                         }
 
                         Box(modifier = Modifier.size(50.dp)) {
                             Button(
-                                onClick = { fetchData(coroutineScope, "Down", showDialog, dialogTitle, dialogMessage) },
+                                onClick = { socketManager.moveBackward()},
                                 colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF273A60), contentColor = Color.White),
                                 shape = CircleShape,
                                 border = BorderStroke(1.dp, Color.White),
@@ -173,7 +148,7 @@ fun DrivingScreen(coroutineScope: CoroutineScope, navController: NavController) 
                     }
                     Box(modifier = Modifier.size(50.dp)) {
                         Button(
-                            onClick = { fetchData(coroutineScope, "Right", showDialog, dialogTitle, dialogMessage)},
+                            onClick = {socketManager.moveRight()},
                             colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF273A60), contentColor = Color.White),
                             shape = CircleShape,
                             border = BorderStroke(1.dp, Color.White),
@@ -209,13 +184,13 @@ fun DrivingScreen(coroutineScope: CoroutineScope, navController: NavController) 
                     onDismissRequest = { expanded = false },
                     modifier = Modifier.width(IntrinsicSize.Min)
                 ) {
-                    DropdownMenuItem(onClick = {
+                    DropdownMenuItem(onClick = { socketManager.driverModeAuto()
                         selectedOption = "Automatic Driving"
                         expanded = false
                     }) {
                         Text(text = "Automatic Driving")
                     }
-                    DropdownMenuItem(onClick = {
+                    DropdownMenuItem(onClick = {socketManager.driverModeMan()
                         selectedOption = "Manual Driving"
                         expanded = false
                     }) {
@@ -223,7 +198,7 @@ fun DrivingScreen(coroutineScope: CoroutineScope, navController: NavController) 
                     }
                 }
                 Button(
-                    onClick = { isStarted = true },
+                    onClick = { socketManager.startMower()  },
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF273A60), contentColor = Color.White),
                     border = BorderStroke(1.dp, Color.White),
                     enabled = !isStarted
@@ -232,7 +207,7 @@ fun DrivingScreen(coroutineScope: CoroutineScope, navController: NavController) 
                 }
 
                 Button(
-                    onClick = { isStarted = false },
+                    onClick = { socketManager.stopMower() },
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF273A60), contentColor = Color.White),
                     border = BorderStroke(1.dp, Color.White),
                     enabled = isStarted

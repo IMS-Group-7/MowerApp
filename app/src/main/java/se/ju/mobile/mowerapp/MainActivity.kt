@@ -29,36 +29,5 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-        fetchData()
-    }
-
-    private fun fetchData() {
-        Thread {
-            try {
-                val url = URL("http://10.0.2.2:5000/api/mower")
-                val connection = url.openConnection() as HttpURLConnection
-                connection.requestMethod = "GET"
-                connection.connect()
-
-                val responseCode = connection.responseCode
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    val inputStream = connection.inputStream
-                    val reader = BufferedReader(InputStreamReader(inputStream))
-                    val response = reader.readText()
-                    reader.close()
-
-                    // Handle the data here, e.g., update the UI
-                    runOnUiThread {
-                        // Update the UI with the fetched data
-                    }
-                } else {
-                    // Handle the error
-                    Log.e("MainActivity", "Error response code: $responseCode")
-                }
-            } catch (e: Exception) {
-                Log.e("MainActivity", "Error: ${e.message}")
-                e.printStackTrace()
-            }
-        }.start()
     }
 }
