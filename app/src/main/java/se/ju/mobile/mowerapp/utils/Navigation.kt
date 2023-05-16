@@ -42,11 +42,14 @@ fun Navigation() {
             SessionHistoryScreen(navController = navController)
         }
         composable(route = "sessionSummary/{sessionId}",
-            arguments = listOf(navArgument("sessionId") { defaultValue = "" } )) { backStackEntry ->
+            arguments = listOf(navArgument("sessionId") { defaultValue = "" } )
+        ) { backStackEntry ->
             SessionSummaryScreen(sessionId = backStackEntry.arguments?.getString("sessionId")!!, navController = navController)
         }
-        composable(route = Screen.CollisionAvoidedScreen.route) {
-            CollisionAvoidedScreen(navController = navController)
+        composable(route = "sessionSummary/{sessionId}/{collisionId}",
+            arguments = listOf(navArgument("sessionId") { defaultValue = "" }, navArgument("collisionId") { defaultValue = "" } )
+        ) { backStackEntry ->
+            CollisionAvoidedScreen(sessionId = backStackEntry.arguments?.getString("sessionId")!!, collisionId = backStackEntry.arguments?.getString("collisionId")!!, navController = navController)
         }
     }
 }

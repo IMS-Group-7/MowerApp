@@ -51,6 +51,7 @@ fun SessionDetails(sessionId: String, navController: NavController) {
             collisionsList.add(
                 Collision(
                     title = "Collision #${i+1}",
+                    id = jsonResponse.getJSONObject(i).getString("id"),
                     coordinates = Pair(jsonResponse.getJSONObject(i).getString("x").toFloat(), jsonResponse.getJSONObject(i).getString("y").toFloat()),
                     timestamp = jsonResponse.getJSONObject(i).getString("timestamp"),
                 )
@@ -68,7 +69,7 @@ fun SessionDetails(sessionId: String, navController: NavController) {
     ) {
         SessionDetailsDisplay(startTime, endTime, collisionAvoided)
         for (i in 0 until collisionsList.size) {
-            CollisionsListComposable(collision = collisionsList[i], navController = navController)
+            CollisionsListComposable(sessionId = sessionId, collision = collisionsList[i], navController = navController)
         }
     }
 }
@@ -111,14 +112,14 @@ fun SessionDetailsDisplay(startTime : String, endTime : String, collisionsAvoide
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun CollisionsListComposable(collision: Collision, navController: NavController) {
+fun CollisionsListComposable(sessionId: String, collision: Collision, navController: NavController) {
     Card(
         modifier = Modifier
             .border(1.dp, Color.Black)
             .padding(16.dp, 16.dp, 16.dp, 0.dp)
             .fillMaxWidth()
             .wrapContentHeight()
-            .clickable { navController.navigate(Screen.CollisionAvoidedScreen.route) },
+            .clickable { navController.navigate("sessionSummary/${sessionId}/${collision.id}") },
         elevation = 4.dp
     ) {
         Column(
@@ -133,6 +134,7 @@ fun CollisionsListComposable(collision: Collision, navController: NavController)
 
 data class Collision(
     val title: String,
+    val id: String,
     val coordinates: Pair<Float, Float>,
     val timestamp: String,
 )

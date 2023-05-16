@@ -1,5 +1,7 @@
 package se.ju.mobile.mowerapp.views
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
@@ -15,83 +17,94 @@ import androidx.compose.material.Scaffold
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
+import kotlinx.coroutines.runBlocking
+import org.json.JSONObject
+import se.ju.mobile.mowerapp.utils.ApiManager
+import se.ju.mobile.mowerapp.utils.Collision
 import se.ju.mobile.mowerapp.utils.NavBar
 import se.ju.mobile.mowerapp.utils.PathView
+import se.ju.mobile.mowerapp.utils.formatStringtoDate
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun CollisionAvoidedScreen(navController: NavController) {
+fun CollisionAvoidedScreen(sessionId: String, collisionId: String, navController: NavController) {
+    val obstacle: Obstacle
+    val collision: Collision
+    val res = ApiManager()
+
+    runBlocking {
+        val asyncResponse = res.makeHttpGetRequest("http://34.173.248.99/sessions/${sessionId}")
+        val jsonResponse = JSONObject(asyncResponse).getJSONArray("coordinate")
+        obstacle = Obstacle (
+            id = jsonResponse.getJSONObject(0).getJSONObject("obstacle").getString("id"),
+            coordinateId = jsonResponse.getJSONObject(0).getJSONObject("obstacle").getString("coordinateId"),
+            imagePath = jsonResponse.getJSONObject(0).getJSONObject("obstacle").getString("imagePath"),
+            objectName = jsonResponse.getJSONObject(0).getJSONObject("obstacle").getString("object"),
+        )
+        collision = Collision (
+            title = "",
+            id = jsonResponse.getJSONObject(0).getString("id"),
+            coordinates = Pair(jsonResponse.getJSONObject(0).getString("x").toFloat(), jsonResponse.getJSONObject(0).getString("y").toFloat()),
+            timestamp = jsonResponse.getJSONObject(0).getString("timestamp"),
+        )
+    }
 
     Column(modifier = Modifier
         .padding(0.dp)
         .background(Color(0xFF273A60))) {
         Text(
-            text = "Name of the Collision #Number",
+            text = collisionId,
             modifier = Modifier
                 .padding(vertical = 25.dp)
                 .align(Alignment.CenterHorizontally),
-            fontSize = 24.sp,
+            fontSize = 16.sp,
             color = Color.White
-        )
-
-        // Zone for the picture of the collision
-        AndroidView (
-            modifier = Modifier
-                .padding(0.dp)
-                .fillMaxWidth()
-                .height(245.dp)
-                .background(color = Color.White),
-            factory = { context ->
-                PathView(context).apply {  }
-            }
         )
 
         Box(
             modifier = Modifier
-                .padding(16.dp)
                 .fillMaxWidth()
                 .background(Color.White)
-                .height(120.dp)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(14.dp),
-                verticalArrangement = Arrangement.SpaceEvenly,
+                verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "Coordinates: 123.312",
+                // Zone for the picture of the collision
+                Image(
+                    painter = rememberAsyncImagePainter(obstacle.imagePath),
+                    contentDescription = null,
+                    modifier = Modifier.size(256.dp).padding(vertical = 16.dp)
                 )
                 Text(
-                    text = "TimeStamp: 11/05/2023 - 17:27:43",
+                    text = "Coordinates: x:${collision.coordinates.first} - y:${collision.coordinates.second}",
+                    color = Color.Black
                 )
                 Text(
-                    text = "Object avoided: Pen",
-                    modifier = Modifier.padding(vertical = 8.dp)
+                    text = "Timestamp: ${formatStringtoDate(collision.timestamp)}",
+                    color = Color.Black
+                )
+                Text(
+                    text = "Object avoided: ${obstacle.objectName}",
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    color = Color.Black
                 )
             }
         }
     }
 }
 
-/*fun formatDate(date: LocalDate): String {
-    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-    return date.format(formatter)
-}
-
-fun formatTime(time: LocalTime): String {
-    val formatter = DateTimeFormatter.ofPattern("HH:mm:ss")
-    return time.format(formatter)
-}*/
-
-data class CollisionSession(
-    val title: String,
-    val sessionNumber: Int,
-    val Date: LocalDate,
-    val Time: LocalTime,
-    val NumberOfCollisions: Int,
+data class Obstacle(
+    val id: String,
+    val coordinateId: String,
+    val imagePath: String,
+    val objectName: String,
 )
