@@ -1,4 +1,6 @@
 package se.ju.mobile.mowerapp.utils
+import android.os.Build
+import androidx.annotation.RequiresApi
 import se.ju.mobile.mowerapp.R
 
 import androidx.compose.runtime.Composable
@@ -15,28 +17,39 @@ import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.zIndex
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import kotlinx.coroutines.MainScope
 import se.ju.mobile.mowerapp.socket.SocketManager
 import se.ju.mobile.mowerapp.views.*
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Screen.DrivingScreen.route) {
         composable(route = Screen.DrivingScreen.route) {
-            DrivingScreen( socketManager = SocketManager(),coroutineScope = MainScope(), navController = navController)
+            DrivingScreen(socketManager = SocketManager(), navController = navController)
         }
         composable(route = Screen.SessionHistoryScreen.route) {
             SessionHistoryScreen(navController = navController)
         }
-        composable(route = Screen.SessionSummaryScreen.route) {
-            SessionSummaryScreen(navController = navController)
+        composable(route = "sessionSummary/{sessionId}",
+            arguments = listOf(navArgument("sessionId") { defaultValue = "" } )
+        ) { backStackEntry ->
+            SessionSummaryScreen(sessionId = backStackEntry.arguments?.getString("sessionId")!!, navController = navController)
         }
-        composable(route = Screen.CollisionAvoidedScreen.route) {
-            CollisionAvoidedScreen(navController = navController)
+        composable(route = "sessionSummary/{sessionId}/{collisionId}",
+            arguments = listOf(navArgument("sessionId") { defaultValue = "" }, navArgument("collisionId") { defaultValue = "" } )
+        ) { backStackEntry ->
+            CollisionAvoidedScreen(sessionId = backStackEntry.arguments?.getString("sessionId")!!, collisionId = backStackEntry.arguments?.getString("collisionId")!!, navController = navController)
         }
     }
 }
