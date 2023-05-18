@@ -177,7 +177,7 @@ fun DrivingScreen(socketManager: SocketManager, navController: NavController) {
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF273A60), contentColor = Color.White),
                     border = BorderStroke(1.dp, Color.White),
                 ) {
-                    Text(text = "A", color = Color.White)
+                    Text(text = if(isAuto) "Autonomous" else "Manual", color = Color.White)
                 }
                 DropdownMenu(
                     expanded = expanded,
@@ -187,18 +187,23 @@ fun DrivingScreen(socketManager: SocketManager, navController: NavController) {
                     DropdownMenuItem(onClick = { socketManager.driverModeAuto()
                         selectedOption = "Automatic Driving"
                         expanded = false
+                        isAuto = true
                     }) {
                         Text(text = "Automatic Driving")
                     }
                     DropdownMenuItem(onClick = {socketManager.driverModeMan()
                         selectedOption = "Manual Driving"
                         expanded = false
+                        isAuto = false
                     }) {
                         Text(text = "Manual Driving")
                     }
                 }
                 Button(
-                    onClick = { socketManager.startMower()  },
+                    onClick = {
+                        socketManager.startMower()
+                        isStarted = true
+                    },
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF273A60), contentColor = Color.White),
                     border = BorderStroke(1.dp, Color.White),
                     enabled = !isStarted
@@ -207,7 +212,10 @@ fun DrivingScreen(socketManager: SocketManager, navController: NavController) {
                 }
 
                 Button(
-                    onClick = { socketManager.stopMower() },
+                    onClick = {
+                        socketManager.stopMower()
+                        isStarted = false
+                      },
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF273A60), contentColor = Color.White),
                     border = BorderStroke(1.dp, Color.White),
                     enabled = isStarted

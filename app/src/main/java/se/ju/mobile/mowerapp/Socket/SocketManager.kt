@@ -95,7 +95,7 @@ class SocketManager {
         var data = """{
           "type": "MOWER_COMMAND",
           "data": {
-            "action": "forward"
+            "action": "backward"
           }
         }"""
 
