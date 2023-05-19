@@ -19,24 +19,33 @@ class SocketManager {
     }
 
     fun connectMobileAppToBackend() {
-        mowerMobileSocket?.connect()
-
-        // Set up event listeners
-        mowerMobileSocket?.on(Socket.EVENT_CONNECT, onConnect)
-        mowerMobileSocket?.on(Socket.EVENT_DISCONNECT, onDisconnect)
-        mowerMobileSocket?.on("welcome", onWelcome)
-
+        try {
+            mowerMobileSocket?.connect()
+        }catch (e: Exception){
+            Log.e("CONNECTED", "ERROR CONNECTING TO BACKEND", e)
+        }
+        try{
+            mowerMobileSocket?.on(Socket.EVENT_CONNECT, onConnect)
+            mowerMobileSocket?.on(Socket.EVENT_DISCONNECT, onDisconnect)
+            mowerMobileSocket?.on("welcome", onWelcome)
+        }
+        catch (e: Exception){
+            Log.e("EVENT LISTENER", "ERROR INITIATING EVENT LISTENER", e)
+        }
         Log.d("SocketManager", "Event listeners have been set up")
-
-
     }
+
     private val onWelcome = Emitter.Listener { args ->
         val message = args[0] as String
         Log.d("SocketManager", "Received welcome message: $message")
     }
 
     fun disconnectMobileAppToBackend() {
-        mowerMobileSocket?.disconnect()
+        try {
+            mowerMobileSocket?.disconnect()
+        }catch (e: Exception){
+            Log.e("DISCONNECT", "ERROR DISCONNECTING FROM BACKEND", e)
+        }
     }
 
     fun onMessageReceived(listener: (String) -> Unit) {
@@ -47,7 +56,12 @@ class SocketManager {
     }
 
     fun sendMessage(message: String) {
-        mowerMobileSocket?.emit("message", message)
+        try {
+            mowerMobileSocket?.emit("message", message)
+        }
+        catch (e: Exception){
+            Log.e("SEND", "SENDING MESSAGE FAILED", e)
+        }
     }
 
     private val onConnect = Emitter.Listener {
@@ -59,97 +73,78 @@ class SocketManager {
     }
 
     fun startMower() {
-        var data = """{
+        this.sendMessage("""{
           "type": "MOWER_COMMAND",
           "data": {
             "action": "start"
           }
-        }"""
-
-        this.sendMessage(data)
+        }""")
     }
 
     fun stopMower() {
-        var data = """{
+        this.sendMessage("""{
           "type": "MOWER_COMMAND",
           "data": {
             "action": "stop"
           }
         }"""
-
-        this.sendMessage(data)
+        )
     }
 
     fun moveForward(){
-        var data = """{
+        this.sendMessage("""{
           "type": "MOWER_COMMAND",
           "data": {
             "action": "forward"
           }
         }"""
-
-        this.sendMessage(data)
+        )
     }
 
     fun moveBackward(){
-        var data = """{
+        this.sendMessage("""{
           "type": "MOWER_COMMAND",
           "data": {
             "action": "backward"
           }
         }"""
-
-        this.sendMessage(data)
+        )
     }
 
     fun moveLeft(){
-        var data = """{
+        this.sendMessage("""{
           "type": "MOWER_COMMAND",
           "data": {
             "action": "left"
           }
-        }"""
-
-        this.sendMessage(data)
+        }""")
     }
 
     fun moveRight(){
-        var data = """{
+        this.sendMessage("""{
           "type": "MOWER_COMMAND",
           "data": {
             "action": "right"
           }
-        }"""
-
-        this.sendMessage(data)
+        }""")
     }
-    fun driverModeAuto(){
-        var data = """{
+    fun driverModeAutonomous(){
+        this.sendMessage("""{
           "type": "DRIVING_MODE",
           "data": {
             "mode": "auto"
           }
-        }"""
-
-        this.sendMessage(data)
+        }""")
     }
 
-    fun driverModeMan(){
-        var data = """{
+    fun driverModeManual(){
+        this.sendMessage("""{
           "type": "DRIVING_MODE",
           "data": {
             "mode": "manual"
           }
-        }"""
-
-        this.sendMessage(data)
+        }""")
     }
-
-
-    fun getSocket(): Socket? {
-        return mowerMobileSocket
-    }
-
 }
 
 

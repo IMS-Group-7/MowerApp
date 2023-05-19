@@ -1,7 +1,9 @@
 package se.ju.mobile.mowerapp.views
 
 import android.app.AlertDialog
+import android.graphics.drawable.Icon
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.Button
@@ -27,17 +29,16 @@ import androidx.compose.material.TextButton
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.navigation.NavController
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import se.ju.mobile.mowerapp.socket.SocketManager
 import se.ju.mobile.mowerapp.utils.NavBar
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.net.HttpURLConnection
-import java.net.URL
 import se.ju.mobile.mowerapp.utils.PathView
-
+import androidx.compose.material.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 
 @Composable
 fun ShowAlertDialog(showDialog: MutableState<Boolean>, dialogTitle: MutableState<String>, dialogMessage: MutableState<String>) {
@@ -59,13 +60,15 @@ fun ShowAlertDialog(showDialog: MutableState<Boolean>, dialogTitle: MutableState
 fun DrivingScreen(socketManager: SocketManager, navController: NavController) {
     var isAuto by remember { mutableStateOf(true) }
     var isStarted by remember { mutableStateOf(false) }
+    var isConnected by remember { mutableStateOf(false) }
     var expanded by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf("") }
     val showDialog = remember { mutableStateOf(false) }
     val dialogTitle = remember { mutableStateOf("") }
     val dialogMessage = remember { mutableStateOf("") }
 
-    socketManager.connectMobileAppToBackend()
+
+//    socketManager.connectMobileAppToBackend()
 
     MowerAppTheme {
         Column(modifier = Modifier
@@ -111,9 +114,13 @@ fun DrivingScreen(socketManager: SocketManager, navController: NavController) {
                             shape = CircleShape,
                             border = BorderStroke(1.dp, Color.White),
                             modifier = Modifier.fillMaxSize(),
-                            enabled = isStarted and !isAuto
+                            enabled = isStarted and !isAuto and isConnected
                         ) {
-                            Text("Q", style = TextStyle(fontSize = 20.sp), textAlign = TextAlign.Center)
+                            Icon(
+                                imageVector = Icons.Filled.KeyboardArrowLeft,
+                                contentDescription = "Turn Left",
+                                modifier = Modifier.size(24.dp)
+                            )
                         }
                     }
 
@@ -127,9 +134,13 @@ fun DrivingScreen(socketManager: SocketManager, navController: NavController) {
                                 shape = CircleShape,
                                 border = BorderStroke(1.dp, Color.White),
                                 modifier = Modifier.fillMaxSize(),
-                                enabled = isStarted and !isAuto
+                                enabled = isStarted and !isAuto and isConnected
                             ) {
-                                Text("W", style = TextStyle(fontSize = 20.sp), textAlign = TextAlign.Center)
+                                Icon(
+                                    imageVector = Icons.Filled.KeyboardArrowUp,
+                                    contentDescription = "Forward",
+                                    modifier = Modifier.size(24.dp)
+                                )
                             }
                         }
 
@@ -140,9 +151,13 @@ fun DrivingScreen(socketManager: SocketManager, navController: NavController) {
                                 shape = CircleShape,
                                 border = BorderStroke(1.dp, Color.White),
                                 modifier = Modifier.fillMaxSize(),
-                                enabled = isStarted and !isAuto
+                                enabled = isStarted and !isAuto and isConnected
                             ) {
-                                Text("S", style = TextStyle(fontSize = 20.sp), textAlign = TextAlign.Center)
+                                Icon(
+                                    imageVector = Icons.Filled.KeyboardArrowDown,
+                                    contentDescription = "Turn Left",
+                                    modifier = Modifier.size(24.dp)
+                                )
                             }
                         }
                     }
@@ -153,9 +168,13 @@ fun DrivingScreen(socketManager: SocketManager, navController: NavController) {
                             shape = CircleShape,
                             border = BorderStroke(1.dp, Color.White),
                             modifier = Modifier.fillMaxSize(),
-                            enabled = isStarted and !isAuto
+                            enabled = isStarted and !isAuto and isConnected
                         ) {
-                            Text("D", style = TextStyle(fontSize = 20.sp), textAlign = TextAlign.Center)
+                            Icon(
+                                imageVector = Icons.Filled.KeyboardArrowRight,
+                                contentDescription = "Turn Right",
+                                modifier = Modifier.size(24.dp)
+                            )
                         }
                     }
                 }
@@ -176,6 +195,7 @@ fun DrivingScreen(socketManager: SocketManager, navController: NavController) {
                     shape = CircleShape,
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF273A60), contentColor = Color.White),
                     border = BorderStroke(1.dp, Color.White),
+                    enabled = isConnected
                 ) {
                     Text(text = if(isAuto) "Autonomous" else "Manual", color = Color.White)
                 }
@@ -184,14 +204,14 @@ fun DrivingScreen(socketManager: SocketManager, navController: NavController) {
                     onDismissRequest = { expanded = false },
                     modifier = Modifier.width(IntrinsicSize.Min)
                 ) {
-                    DropdownMenuItem(onClick = { socketManager.driverModeAuto()
+                    DropdownMenuItem(onClick = { socketManager.driverModeAutonomous()
                         selectedOption = "Automatic Driving"
                         expanded = false
                         isAuto = true
                     }) {
                         Text(text = "Automatic Driving")
                     }
-                    DropdownMenuItem(onClick = {socketManager.driverModeMan()
+                    DropdownMenuItem(onClick = {socketManager.driverModeManual()
                         selectedOption = "Manual Driving"
                         expanded = false
                         isAuto = false
@@ -206,7 +226,7 @@ fun DrivingScreen(socketManager: SocketManager, navController: NavController) {
                     },
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF273A60), contentColor = Color.White),
                     border = BorderStroke(1.dp, Color.White),
-                    enabled = !isStarted
+                    enabled = !isStarted and isConnected
                 ) {
                     Text("Start")
                 }
@@ -218,9 +238,40 @@ fun DrivingScreen(socketManager: SocketManager, navController: NavController) {
                       },
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF273A60), contentColor = Color.White),
                     border = BorderStroke(1.dp, Color.White),
-                    enabled = isStarted
+                    enabled = isStarted and isConnected
                 ) {
                     Text("Stop")
+                }
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 15.dp),
+                horizontalArrangement =  Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Button(
+                    onClick = {
+                        try{
+                            if (isConnected){
+                                socketManager.disconnectMobileAppToBackend()
+                                isConnected = false
+                            }
+                            else{
+                                socketManager.connectMobileAppToBackend()
+                                isConnected = true
+                            }
+                        } catch (e: Exception){
+                            isConnected = false
+                            Log.d("EXCEPTION", e.toString())
+                        }
+
+                    },
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF273A60), contentColor = Color.White),
+                    border = BorderStroke(1.dp, Color.White),
+                    modifier = Modifier.fillMaxWidth(3f)
+                ) {
+                    Text(if(isConnected)"Disconnect" else "Connect")
                 }
             }
             
