@@ -1,9 +1,6 @@
 package se.ju.mobile.mowerapp.views
 
-import android.app.AlertDialog
-import android.graphics.drawable.Icon
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.Button
@@ -16,8 +13,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.background
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.ui.viewinterop.AndroidView
@@ -34,7 +29,6 @@ import se.ju.mobile.mowerapp.utils.NavBar
 import se.ju.mobile.mowerapp.utils.PathView
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
@@ -204,14 +198,14 @@ fun DrivingScreen(socketManager: SocketManager, navController: NavController) {
                     onDismissRequest = { expanded = false },
                     modifier = Modifier.width(IntrinsicSize.Min)
                 ) {
-                    DropdownMenuItem(onClick = { socketManager.driverModeAutonomous()
+                    DropdownMenuItem(onClick = { socketManager.autonomousMode()
                         selectedOption = "Automatic Driving"
                         expanded = false
                         isAuto = true
                     }) {
                         Text(text = "Automatic Driving")
                     }
-                    DropdownMenuItem(onClick = {socketManager.driverModeManual()
+                    DropdownMenuItem(onClick = {socketManager.manualMode()
                         selectedOption = "Manual Driving"
                         expanded = false
                         isAuto = false
