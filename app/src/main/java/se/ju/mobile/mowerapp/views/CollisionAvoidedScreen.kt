@@ -33,25 +33,31 @@ import java.time.format.DateTimeFormatter
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CollisionAvoidedScreen(sessionId: String, collisionId: String, navController: NavController) {
-    val obstacle: Obstacle
-    val collision: Collision
+    var obstacle: Obstacle? = null
+    var collision: Collision? = null
     val res = ApiManager()
 
     runBlocking {
         val asyncResponse = res.makeHttpGetRequest("http://34.173.248.99/sessions/${sessionId}")
         val jsonResponse = JSONObject(asyncResponse).getJSONArray("coordinate")
-        obstacle = Obstacle (
-            id = jsonResponse.getJSONObject(0).getJSONObject("obstacle").getString("id"),
-            coordinateId = jsonResponse.getJSONObject(0).getJSONObject("obstacle").getString("coordinateId"),
-            imagePath = jsonResponse.getJSONObject(0).getJSONObject("obstacle").getString("imagePath"),
-            objectName = jsonResponse.getJSONObject(0).getJSONObject("obstacle").getString("object"),
-        )
-        collision = Collision (
-            title = "",
-            id = jsonResponse.getJSONObject(0).getString("id"),
-            coordinates = Pair(jsonResponse.getJSONObject(0).getString("x").toFloat(), jsonResponse.getJSONObject(0).getString("y").toFloat()),
-            timestamp = jsonResponse.getJSONObject(0).getString("timestamp"),
-        )
+        for (i in 0 until jsonResponse.length()) {
+            var str = jsonResponse.getJSONObject(i).getJSONObject("obstacle").getString("coordinateId")
+            var compare = collisionId.compareTo(str)
+            if (compare == 0) {
+                collision = Collision (
+                    title = "",
+                    id = jsonResponse.getJSONObject(i).getString("id"),
+                    coordinates = Pair(jsonResponse.getJSONObject(i).getString("x").toFloat(), jsonResponse.getJSONObject(i).getString("y").toFloat()),
+                    timestamp = jsonResponse.getJSONObject(i).getString("timestamp"),
+                )
+                obstacle = Obstacle (
+                    id = jsonResponse.getJSONObject(i).getJSONObject("obstacle").getString("id"),
+                    coordinateId = jsonResponse.getJSONObject(i).getJSONObject("obstacle").getString("coordinateId"),
+                    imagePath = jsonResponse.getJSONObject(i).getJSONObject("obstacle").getString("imagePath"),
+                    objectName = jsonResponse.getJSONObject(i).getJSONObject("obstacle").getString("object"),
+                )
+            }
+        }
     }
 
     Column(modifier = Modifier
@@ -80,20 +86,20 @@ fun CollisionAvoidedScreen(sessionId: String, collisionId: String, navController
             ) {
                 // Zone for the picture of the collision
                 Image(
-                    painter = rememberAsyncImagePainter(obstacle.imagePath),
+                    painter = rememberAsyncImagePainter(obstacle?.imagePath),
                     contentDescription = null,
                     modifier = Modifier.size(256.dp).padding(vertical = 16.dp)
                 )
                 Text(
-                    text = "Coordinates: x:${collision.coordinates.first} - y:${collision.coordinates.second}",
+                    text = "Coordinates: x:${collision?.coordinates?.first} - y:${collision?.coordinates?.second}",
                     color = Color.Black
                 )
                 Text(
-                    text = "Timestamp: ${formatStringtoDate(collision.timestamp)}",
+                    text = "Timestamp: ${formatStringtoDate(collision?.timestamp.toString())}",
                     color = Color.Black
                 )
                 Text(
-                    text = "Object avoided: ${obstacle.objectName}",
+                    text = "Object avoided: ${obstacle?.objectName}",
                     modifier = Modifier.padding(vertical = 8.dp),
                     color = Color.Black
                 )
