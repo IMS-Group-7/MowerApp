@@ -12,11 +12,9 @@ import kotlin.math.sin
 
 class PathView : View {
     private var pathPaint: Paint? = null
-    private var path: Path? = null
     private var boundariesPaint: Paint? = null
     private var boundaries: Path? = null
 
-    private var number: Float = 0f
     private var pathPoints: ArrayList<PointF> = ArrayList<PointF>()
 
     constructor(context: Context?) : super(context) {
@@ -40,40 +38,59 @@ class PathView : View {
         pathPaint!!.color = Color.BLUE
         pathPaint!!.style = Paint.Style.STROKE
         pathPaint!!.strokeWidth = 5F
-//        path = Path()
+
         boundariesPaint = Paint()
         boundariesPaint!!.color = Color.BLACK
         boundariesPaint!!.style = Paint.Style.STROKE
         boundariesPaint!!.strokeWidth = 7F
         boundaries = Path()
 
-        number = 20f
-
-        pathPoints = ArrayList<PointF>()
-        pathPoints.add(PointF(9f, 15f))
-        pathPoints.add(PointF(24f, 17f))
-        pathPoints.add(PointF(27f, 25f))
-        pathPoints.add(PointF(35f, 15f))
-        pathPoints.add(PointF(40f, 20f))
+//        pathPoints = ArrayList<PointF>()
+//        pathPoints.add(PointF(50f, 100f))
+//        pathPoints.add(PointF(60f, 80f))
+//        pathPoints.add(PointF(40f, 50f))
+//        pathPoints.add(PointF(20f, 20f))
+//
+//        pathPoints.add(PointF(27f, 25f))
+//        pathPoints.add(PointF(35f, 15f))
+//        pathPoints.add(PointF(40f, 20f))
     }
 
     @SuppressLint("DrawAllocation")
     override fun onDraw(canvas: android.graphics.Canvas?) {
         super.onDraw(canvas)
-//        val pathPoints = ArrayList<PointF>()
-        val pathPoints = this.pathPoints
+        val pathPoints = ArrayList<PointF>()
+//        val pathPoints = this.pathPoints
         val boundariesPoints = ArrayList<PointF>()
         val res = ApiManager()
         val bounds = RectF()
         val boundsScaleMatrix = Matrix()
+        val padValue = 40f
+        val scalar: Float
         val path = Path()
-        var padValue = 40f
-        var scalar = 1f
-        val pathPaint = this.pathPaint
 
         postInvalidateDelayed(500)
 
-        // Draw the path
+        runBlocking {
+            try {
+                val asyncResponse =
+                    res.makeHttpGetRequest("http://34.173.248.99/coordinates/active-session-path")
+                val jsonResponse = JSONArray(asyncResponse)
+
+                for (i in 0 until jsonResponse.length()) {
+                    pathPoints.add(
+                        PointF(
+                            jsonResponse.getJSONObject(i).getString("x").toFloat(),
+                            jsonResponse.getJSONObject(i).getString("y").toFloat()
+                        )
+                    )
+                }
+            } catch (e: java.lang.RuntimeException) {
+
+            }
+        }
+
+        // Plot the path
         for (i in 0 until pathPoints.size) {
             val point: PointF = pathPoints[i]
 
@@ -116,10 +133,9 @@ class PathView : View {
 
         path?.transform(boundsScaleMatrix)
 
-        // Finally draw
-        canvas.apply {
-            this?.drawPath(path!!, pathPaint!!)
-        }
+        // Finally draw it
+        canvas?.drawPath(path!!, this.pathPaint!!)
+
 
 //        invalidate()
 
