@@ -57,10 +57,10 @@ class PathView : View {
         var pathPoints = ArrayList<PointF>()
         val boundariesPoints = ArrayList<PointF>()
         val res = ApiManager()
-        val bounds = RectF()
+        var bounds = RectF()
         val boundsScaleMatrix = Matrix()
         val padValue = 40f
-        val scalar: Float
+        var scalar: Float
         val path = Path()
 
         // We redraw and retrive every second
@@ -109,11 +109,34 @@ class PathView : View {
         // Compute bounding box of path and derive scalar
         path?.computeBounds(bounds, true)
 
-        if (bounds.width() > bounds.height()) {
-            scalar = (width - padValue * 2) / bounds.width()
+        // Center it
+        boundsScaleMatrix.setTranslate(
+            -bounds.centerX() + width  / 2,
+            -bounds.centerY() + height / 2
+        )
+
+        path?.transform(boundsScaleMatrix)
+
+//        if (bounds.width() > bounds.height()) {
+//            scalar = (width - padValue * 2) / bounds.width()
+//        } else {
+//            scalar = (height - padValue * 2) / bounds.height()
+//        }
+
+        val scalarX = (width - padValue * 2) / bounds.width()
+        val scalarY = (height - padValue * 2) / bounds.height()
+
+        if (scalarX <= scalarY) {
+            scalar = scalarX
+        } else if (scalarY < scalarX) {
+            scalar = scalarY
         } else {
-            scalar = (height - padValue * 2) / bounds.height()
+            scalar = 1f
         }
+
+//        scalar = 8f
+
+        path?.computeBounds(bounds, true)
 
         // Scale the path to the screen
         boundsScaleMatrix.setScale(
@@ -121,14 +144,6 @@ class PathView : View {
             -scalar,
             bounds.centerX(),
             bounds.centerY()
-        )
-
-        path?.transform(boundsScaleMatrix)
-
-        // Center it
-        boundsScaleMatrix.setTranslate(
-            -bounds.centerX() + width  / 2,
-            -bounds.centerY() + height / 2
         )
 
         path?.transform(boundsScaleMatrix)
