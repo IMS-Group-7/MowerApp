@@ -36,6 +36,9 @@ class PathView : View {
         pathPaint!!.color = Color.rgb(137, 171, 65)
         pathPaint!!.style = Paint.Style.STROKE
         pathPaint!!.strokeWidth = 15F
+        pathPaint!!.strokeCap = Paint.Cap.ROUND
+        pathPaint!!.strokeJoin = Paint.Join.ROUND
+        pathPaint!!.setPathEffect(CornerPathEffect(50f))
 
         boundariesPaint = Paint()
         boundariesPaint!!.color = Color.BLACK
