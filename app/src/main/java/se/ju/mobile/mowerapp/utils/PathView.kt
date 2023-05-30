@@ -35,7 +35,7 @@ class PathView : View {
         pathPaint = Paint()
         pathPaint!!.color = Color.rgb(137, 171, 65)
         pathPaint!!.style = Paint.Style.STROKE
-        pathPaint!!.strokeWidth = 5F
+        pathPaint!!.strokeWidth = 15F
 
         boundariesPaint = Paint()
         boundariesPaint!!.color = Color.BLACK
@@ -44,7 +44,7 @@ class PathView : View {
         boundaries = Path()
 
         backgroundPaint = Paint()
-        backgroundPaint!!.color = Color.rgb(41, 58, 95)
+        backgroundPaint!!.color = Color.rgb(31, 44, 71)
         backgroundPaint!!.style = Paint.Style.FILL
     }
 
