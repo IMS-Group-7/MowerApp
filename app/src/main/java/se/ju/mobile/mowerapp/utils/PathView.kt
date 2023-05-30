@@ -11,6 +11,7 @@ import org.json.JSONArray
 class PathView : View {
     private var pathPaint: Paint? = null
     private var boundariesPaint: Paint? = null
+    private var backgroundPaint: Paint? = null
     private var boundaries: Path? = null
     private var lastPathPoints: ArrayList<PointF> = ArrayList<PointF>()
 
@@ -32,7 +33,7 @@ class PathView : View {
 
     private fun init() {
         pathPaint = Paint()
-        pathPaint!!.color = Color.BLUE
+        pathPaint!!.color = Color.rgb(137, 171, 65)
         pathPaint!!.style = Paint.Style.STROKE
         pathPaint!!.strokeWidth = 5F
 
@@ -41,6 +42,10 @@ class PathView : View {
         boundariesPaint!!.style = Paint.Style.STROKE
         boundariesPaint!!.strokeWidth = 7F
         boundaries = Path()
+
+        backgroundPaint = Paint()
+        backgroundPaint!!.color = Color.rgb(41, 58, 95)
+        backgroundPaint!!.style = Paint.Style.FILL
     }
 
     @SuppressLint("DrawAllocation")
@@ -56,7 +61,9 @@ class PathView : View {
         val path = Path()
 
         // We redraw and retrive every second
-        postInvalidateDelayed(1000)
+        postInvalidateDelayed(500)
+
+        width
 
         // Retrieve data from backend
         runBlocking {
@@ -124,6 +131,8 @@ class PathView : View {
         path?.transform(boundsScaleMatrix)
 
         // Finally draw it
+//        canvas?.drawARGB(50, 87, 98, 120)
+        canvas?.drawPaint(this.backgroundPaint!!)
         canvas?.drawPath(path!!, this.pathPaint!!)
     }
 }
