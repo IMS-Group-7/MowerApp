@@ -2,20 +2,20 @@ package se.ju.mobile.mowerapp.utils
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Path
-import android.graphics.PointF
+import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
 import kotlinx.coroutines.runBlocking
 import org.json.JSONArray
+import kotlin.math.cos
+import kotlin.math.sin
 
 class PathView : View {
     private var pathPaint: Paint? = null
-    private var path: Path? = null
     private var boundariesPaint: Paint? = null
     private var boundaries: Path? = null
+
+    private var pathPoints: ArrayList<PointF> = ArrayList<PointF>()
 
     constructor(context: Context?) : super(context) {
         init()
@@ -38,7 +38,7 @@ class PathView : View {
         pathPaint!!.color = Color.BLUE
         pathPaint!!.style = Paint.Style.STROKE
         pathPaint!!.strokeWidth = 5F
-        path = Path()
+
         boundariesPaint = Paint()
         boundariesPaint!!.color = Color.BLACK
         boundariesPaint!!.style = Paint.Style.STROKE
@@ -52,39 +52,79 @@ class PathView : View {
         val pathPoints = ArrayList<PointF>()
         val boundariesPoints = ArrayList<PointF>()
         val res = ApiManager()
+        val bounds = RectF()
+        val boundsScaleMatrix = Matrix()
+        val padValue = 40f
+        val scalar: Float
+        val path = Path()
 
-        // Draws the boundaries
+        // We redraw and retrive every second
+        postInvalidateDelayed(1000)
+
+        // Retrieve data from backend
         runBlocking {
-            val asyncResponse = res.makeHttpGetRequest("http://34.173.248.99/coordinates/boundaries")
-            val jsonResponse = JSONArray(asyncResponse)
-            for (i in 0 until jsonResponse.length()) {
-                boundariesPoints.add(
-                    PointF(
-                        jsonResponse.getJSONObject(i).getString("x").toFloat(),
-                        jsonResponse.getJSONObject(i).getString("y").toFloat()
+            try {
+                val asyncResponse =
+                    res.makeHttpGetRequest("http://34.173.248.99/coordinates/active-session-path")
+                val jsonResponse = JSONArray(asyncResponse)
+
+                for (i in 0 until jsonResponse.length()) {
+                    pathPoints.add(
+                        PointF(
+                            jsonResponse.getJSONObject(i).getString("x").toFloat(),
+                            jsonResponse.getJSONObject(i).getString("y").toFloat()
+                        )
                     )
-                )
-            }
-            for (i in 0 until boundariesPoints.size) {
-                val point: PointF = boundariesPoints[i]
-                if (i == 0) {
-                    boundaries?.moveTo(point.x, point.y)
-                } else {
-                    boundaries?.lineTo(point.x, point.y)
                 }
+            } catch (e: java.lang.RuntimeException) {
+
             }
-            canvas?.drawPath(boundaries!!, boundariesPaint!!)
         }
 
-        // Draw the path
+        // Plot the path
         for (i in 0 until pathPoints.size) {
             val point: PointF = pathPoints[i]
+
+            var scaledPoint = PointF(
+                point.x,
+                point.y
+            )
+
             if (i == 0) {
-                path?.moveTo(point.x, point.y)
+                path?.moveTo(scaledPoint.x, scaledPoint.y)
             } else {
-                path?.lineTo(point.x, point.y)
+                path?.lineTo(scaledPoint.x, scaledPoint.y)
             }
         }
-        canvas?.drawPath(path!!, pathPaint!!)
+
+        // Compute bounding box of path and derive scalar
+        path?.computeBounds(bounds, true)
+
+        if (bounds.width() > bounds.height()) {
+            scalar = (width - padValue * 2) / bounds.width()
+        } else {
+            scalar = (height - padValue * 2) / bounds.height()
+        }
+
+        // Scale the path to the screen
+        boundsScaleMatrix.setScale(
+            scalar,
+            -scalar,
+            bounds.centerX(),
+            bounds.centerY()
+        )
+
+        path?.transform(boundsScaleMatrix)
+
+        // Center it
+        boundsScaleMatrix.setTranslate(
+            -bounds.centerX() + width  / 2,
+            -bounds.centerY() + height / 2
+        )
+
+        path?.transform(boundsScaleMatrix)
+
+        // Finally draw it
+        canvas?.drawPath(path!!, this.pathPaint!!)
     }
 }
