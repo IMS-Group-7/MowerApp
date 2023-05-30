@@ -7,15 +7,13 @@ import android.util.AttributeSet
 import android.view.View
 import kotlinx.coroutines.runBlocking
 import org.json.JSONArray
-import kotlin.math.cos
-import kotlin.math.sin
 
 class PathView : View {
     private var pathPaint: Paint? = null
     private var boundariesPaint: Paint? = null
+    private var backgroundPaint: Paint? = null
     private var boundaries: Path? = null
-
-    private var pathPoints: ArrayList<PointF> = ArrayList<PointF>()
+    private var lastPathPoints: ArrayList<PointF> = ArrayList<PointF>()
 
     constructor(context: Context?) : super(context) {
         init()
@@ -35,21 +33,25 @@ class PathView : View {
 
     private fun init() {
         pathPaint = Paint()
-        pathPaint!!.color = Color.BLUE
+        pathPaint!!.color = Color.rgb(137, 171, 65)
         pathPaint!!.style = Paint.Style.STROKE
-        pathPaint!!.strokeWidth = 5F
+        pathPaint!!.strokeWidth = 15F
 
         boundariesPaint = Paint()
         boundariesPaint!!.color = Color.BLACK
         boundariesPaint!!.style = Paint.Style.STROKE
         boundariesPaint!!.strokeWidth = 7F
         boundaries = Path()
+
+        backgroundPaint = Paint()
+        backgroundPaint!!.color = Color.rgb(31, 44, 71)
+        backgroundPaint!!.style = Paint.Style.FILL
     }
 
     @SuppressLint("DrawAllocation")
     override fun onDraw(canvas: android.graphics.Canvas?) {
         super.onDraw(canvas)
-        val pathPoints = ArrayList<PointF>()
+        var pathPoints = ArrayList<PointF>()
         val boundariesPoints = ArrayList<PointF>()
         val res = ApiManager()
         val bounds = RectF()
@@ -59,7 +61,9 @@ class PathView : View {
         val path = Path()
 
         // We redraw and retrive every second
-        postInvalidateDelayed(1000)
+        postInvalidateDelayed(500)
+
+        width
 
         // Retrieve data from backend
         runBlocking {
@@ -76,8 +80,10 @@ class PathView : View {
                         )
                     )
                 }
-            } catch (e: java.lang.RuntimeException) {
 
+                lastPathPoints = pathPoints
+            } catch (e: java.lang.RuntimeException) {
+                pathPoints = lastPathPoints
             }
         }
 
@@ -125,6 +131,8 @@ class PathView : View {
         path?.transform(boundsScaleMatrix)
 
         // Finally draw it
+//        canvas?.drawARGB(50, 87, 98, 120)
+        canvas?.drawPaint(this.backgroundPaint!!)
         canvas?.drawPath(path!!, this.pathPaint!!)
     }
 }
