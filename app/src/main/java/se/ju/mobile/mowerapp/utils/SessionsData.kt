@@ -18,7 +18,9 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.runBlocking
 import org.json.JSONArray
 import se.ju.mobile.mowerapp.views.Screen
+import java.text.ParseException
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -73,7 +75,14 @@ fun SessionCase(session: Session, navController: NavController) {
 fun formatStringtoDate(rawDate: String): String {
     val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale("US"))
     val formatter = SimpleDateFormat("MM/dd/yyyy - HH:mm:ss", Locale("US"))
-    val date = parser.parse(rawDate)!!
+
+    var date = Date()
+
+    try {
+        date = parser.parse(rawDate)!!
+    } catch (e: ParseException) {
+        return "In progress..."
+    }
     return formatter.format(date)
 }
 

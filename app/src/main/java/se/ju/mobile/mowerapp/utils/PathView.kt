@@ -44,23 +44,12 @@ class PathView : View {
         boundariesPaint!!.style = Paint.Style.STROKE
         boundariesPaint!!.strokeWidth = 7F
         boundaries = Path()
-
-//        pathPoints = ArrayList<PointF>()
-//        pathPoints.add(PointF(50f, 100f))
-//        pathPoints.add(PointF(60f, 80f))
-//        pathPoints.add(PointF(40f, 50f))
-//        pathPoints.add(PointF(20f, 20f))
-//
-//        pathPoints.add(PointF(27f, 25f))
-//        pathPoints.add(PointF(35f, 15f))
-//        pathPoints.add(PointF(40f, 20f))
     }
 
     @SuppressLint("DrawAllocation")
     override fun onDraw(canvas: android.graphics.Canvas?) {
         super.onDraw(canvas)
         val pathPoints = ArrayList<PointF>()
-//        val pathPoints = this.pathPoints
         val boundariesPoints = ArrayList<PointF>()
         val res = ApiManager()
         val bounds = RectF()
@@ -69,8 +58,10 @@ class PathView : View {
         val scalar: Float
         val path = Path()
 
-        postInvalidateDelayed(500)
+        // We redraw and retrive every second
+        postInvalidateDelayed(1000)
 
+        // Retrieve data from backend
         runBlocking {
             try {
                 val asyncResponse =
@@ -135,42 +126,5 @@ class PathView : View {
 
         // Finally draw it
         canvas?.drawPath(path!!, this.pathPaint!!)
-
-
-//        invalidate()
-
-        // Draws the boundaries
-//        runBlocking {
-//            val asyncResponse = res.makeHttpGetRequest("http://34.173.248.99/coordinates/boundaries")
-//            val jsonResponse = JSONArray(asyncResponse)
-//            for (i in 0 until jsonResponse.length()) {
-//                boundariesPoints.add(
-//                    PointF(
-//                        jsonResponse.getJSONObject(i).getString("x").toFloat(),
-//                        jsonResponse.getJSONObject(i).getString("y").toFloat()
-//                    )
-//                )
-//            }
-//            for (i in 0 until boundariesPoints.size) {
-//                val point: PointF = boundariesPoints[i]
-//                if (i == 0) {
-//                    boundaries?.moveTo(point.x, point.y)
-//                } else {
-//                    boundaries?.lineTo(point.x, point.y)
-//                }
-//            }
-//            canvas?.drawPath(boundaries!!, boundariesPaint!!)
-//        }
-//
-//        // Draw the path
-//        for (i in 0 until pathPoints.size) {
-//            val point: PointF = pathPoints[i]
-//            if (i == 0) {
-//                path?.moveTo(point.x, point.y)
-//            } else {
-//                path?.lineTo(point.x, point.y)
-//            }
-//        }
-//        canvas?.drawPath(path!!, pathPaint!!)
     }
 }
