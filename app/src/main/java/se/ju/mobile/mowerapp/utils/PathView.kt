@@ -131,7 +131,6 @@ class PathView : View {
         path?.transform(boundsScaleMatrix)
 
         // Finally draw it
-//        canvas?.drawARGB(50, 87, 98, 120)
         canvas?.drawPaint(this.backgroundPaint!!)
         canvas?.drawPath(path!!, this.pathPaint!!)
     }
