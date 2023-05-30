@@ -106,7 +106,7 @@ class PathView : View {
             }
         }
 
-        // Compute bounding box of path and derive scalar
+        // Compute bounding box of path and center
         path?.computeBounds(bounds, true)
 
         // Center it
@@ -117,12 +117,7 @@ class PathView : View {
 
         path?.transform(boundsScaleMatrix)
 
-//        if (bounds.width() > bounds.height()) {
-//            scalar = (width - padValue * 2) / bounds.width()
-//        } else {
-//            scalar = (height - padValue * 2) / bounds.height()
-//        }
-
+        // Derive scalar
         val scalarX = (width - padValue * 2) / bounds.width()
         val scalarY = (height - padValue * 2) / bounds.height()
 
@@ -133,8 +128,6 @@ class PathView : View {
         } else {
             scalar = 1f
         }
-
-//        scalar = 8f
 
         path?.computeBounds(bounds, true)
 
