@@ -7,15 +7,12 @@ import android.util.AttributeSet
 import android.view.View
 import kotlinx.coroutines.runBlocking
 import org.json.JSONArray
-import kotlin.math.cos
-import kotlin.math.sin
 
 class PathView : View {
     private var pathPaint: Paint? = null
     private var boundariesPaint: Paint? = null
     private var boundaries: Path? = null
-
-    private var pathPoints: ArrayList<PointF> = ArrayList<PointF>()
+    private var lastPathPoints: ArrayList<PointF> = ArrayList<PointF>()
 
     constructor(context: Context?) : super(context) {
         init()
@@ -49,7 +46,7 @@ class PathView : View {
     @SuppressLint("DrawAllocation")
     override fun onDraw(canvas: android.graphics.Canvas?) {
         super.onDraw(canvas)
-        val pathPoints = ArrayList<PointF>()
+        var pathPoints = ArrayList<PointF>()
         val boundariesPoints = ArrayList<PointF>()
         val res = ApiManager()
         val bounds = RectF()
@@ -76,8 +73,10 @@ class PathView : View {
                         )
                     )
                 }
-            } catch (e: java.lang.RuntimeException) {
 
+                lastPathPoints = pathPoints
+            } catch (e: java.lang.RuntimeException) {
+                pathPoints = lastPathPoints
             }
         }
 
